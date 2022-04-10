@@ -15,11 +15,13 @@ class ApiVersionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
             'version' => $this->version,
             'status' => $this->status,
             'deprecated_date' => $this->when(null != $this->deprecated_date, function () {
                 return $this->deprecated_date->format('m.d.Y');
+            }),
+            'example_url' => $this->when('current' == $this->status, function () {
+                return env('APP_URL').'api/'.$this->version;
             })
         ];
     }

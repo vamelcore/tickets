@@ -12,7 +12,7 @@ class ApiVersionController extends Controller
     public function index()
     {
         return new ApiVersionCollection(Cache::remember('api_version', config('cache.default_cache_time'), function (){
-            return ApiVersion::all();
+            return ApiVersion::latest('id')->get();
         }));
     }
 }
