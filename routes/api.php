@@ -14,4 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::any('/', [\App\Http\Controllers\ApiVersionController::class, 'index']);
+//Route::any('/', [\App\Http\Controllers\ApiVersionController::class, 'index']);
