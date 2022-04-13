@@ -25,7 +25,7 @@ class VersionResource extends JsonResource
      * @OA\Property(format="string", title="version", default="v1", description="version name", property="version"),
      * @OA\Property(format="string", title="status", default="active", description="Can be: current / active / deprecated", property="status"),
      * @OA\Property(format="string", title="deprecated_date", default="10.10.2022", description="date when API will be deprecated", property="deprecated_date"),
-     * @OA\Property(format="string", title="example_url", default="http://localhost/api/v1/", description="example API url", property="example_url")
+     * @OA\Property(format="string", title="example_url", default="http(s)://localhost/api/v1/", description="example API url", property="example_url")
      */
     public function toArray($request)
     {

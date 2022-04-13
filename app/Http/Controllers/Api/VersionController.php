@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\VersionCollection;
+use App\Http\Resources\Api\VersionResource;
 use App\Models\ApiVersion;
 use Illuminate\Support\Facades\Cache;
 
@@ -19,7 +19,10 @@ class VersionController extends Controller
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
-     *          @OA\JsonContent(ref="#/components/schemas/VersionCollection")
+     *          @OA\JsonContent(
+     *              @OA\Schema(type="object"),
+     *              @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/VersionResource"))
+     *          )
      *       ),
      *      @OA\Response(response=400, description="Bad request"),
      *      @OA\Response(response=401, description="Unauthenticated"),
@@ -30,7 +33,7 @@ class VersionController extends Controller
      */
     public function index()
     {
-        return new VersionCollection(Cache::remember('api_version', config('cache.default_cache_time'), function (){
+        return VersionResource::collection(Cache::remember('api_version', config('cache.default_cache_time'), function (){
             return ApiVersion::latest('id')->get();
         }));
     }
