@@ -14,4 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::any('/', [\App\Http\Controllers\ApiVersionController::class, 'index']);
+Route::fallback(function(){
+    return abort(404, 'Resource Not Found.');
+});
