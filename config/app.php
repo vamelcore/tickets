@@ -194,4 +194,6 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'date_format_full' => env('DATE_FORMAT_FULL', 'Y-m-d H:i:s'),
+    'date_format_short' => env('DATE_FORMAT_SHORT', 'Y-m-d'),
 ];
