@@ -33,7 +33,7 @@ class VersionResource extends JsonResource
             'version' => $this->version,
             'status' => $this->status,
             'deprecated_date' => $this->when(null != $this->deprecated_date, function () {
-                return $this->deprecated_date->format('m.d.Y');
+                return $this->deprecated_date->format(config('app.date_format_short'));
             }),
             'example_url' => $this->when('current' == $this->status, function () {
                 return env('APP_URL').'api/'.$this->version;
