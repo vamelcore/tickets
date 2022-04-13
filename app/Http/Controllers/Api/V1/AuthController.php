@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -55,12 +57,11 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if (!auth()->attempt($validator)) {
-            return response()->json(['error' => 'Unauthorised'], 401);
+        if (!Auth::attempt($validator)) {
+            return abort(401, 'Unauthorised');
         } else {
-            $success['token'] = auth()->user()->createToken('authToken')->plainTextToken;
-            $success['user'] = auth()->user();
-            return response()->json(['success' => $success])->setStatusCode(200);
+            Auth::user()->token = Auth::user()->createToken('authToken')->plainTextToken;
+            return new UserResource(Auth::user());
         }
     }
 
@@ -86,11 +87,6 @@ class AuthController extends Controller
      *        ),
      *    ),
      *      @OA\Response(
-     *          response=200,
-     *          description="Register Successfully",
-     *          @OA\JsonContent()
-     *       ),
-     *      @OA\Response(
      *          response=201,
      *          description="Register Successfully",
      *          @OA\JsonContent()
@@ -111,14 +107,12 @@ class AuthController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed',
-            'mobile_number' => 'required',
         ]);
 
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
-        $success['token'] =  $user->createToken('authToken')->accessToken;
-        $success['name'] =  $user->name;
-        return response()->json(['success' => $success]);
+        $user->token = $user->createToken('authToken')->plainTextToken;
+        return new UserResource($user);
     }
 }
