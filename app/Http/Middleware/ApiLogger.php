@@ -2,7 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Helpers\GeneralFunctions;
+use App\Helpers\PrintHelper;
+use App\Helpers\StorageHelper;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,8 +26,8 @@ class ApiLogger
     {
         Log::build([
             'driver' => 'single',
-            'path' => GeneralFunctions::getLogPath('api'),
-        ])->info(GeneralFunctions::printMessage([
+            'path' => StorageHelper::getLogPath('api'),
+        ])->info(PrintHelper::printMessage([
             'url' => $request->fullUrl(),
             'method' => $request->getMethod(),
             'request' => $request->all(),

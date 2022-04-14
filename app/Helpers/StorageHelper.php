@@ -2,28 +2,8 @@
 
 namespace App\Helpers;
 
-class GeneralFunctions
+class StorageHelper
 {
-    public static function printMessage($message)
-    {
-        ob_start();
-        if (is_scalar($message))
-            echo $message.PHP_EOL;
-        else
-            print_r($message);
-        $string = ob_get_contents();
-        ob_end_clean();
-
-        return $string;
-    }
-
-    public static function printConsoleMessage($message)
-    {
-        $string = self::printMessage($message);
-
-        fwrite(\STDOUT, $string);
-    }
-
     public static function getLogPath(string $type, string $storageDir = 'logs')
     {
         $pathArray = [
