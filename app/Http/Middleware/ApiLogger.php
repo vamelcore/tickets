@@ -22,6 +22,11 @@ class ApiLogger
         return $next($request);
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Response $response
+     * @return void
+     */
     public function terminate($request, $response)
     {
         Log::build([
@@ -31,6 +36,7 @@ class ApiLogger
             'url' => $request->fullUrl(),
             'method' => $request->getMethod(),
             'request' => $request->all(),
+            'code' => $response->getStatusCode(),
             'response' => json_decode($response->getContent(), true)
         ]));
     }
