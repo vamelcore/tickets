@@ -22,10 +22,10 @@ class VersionResource extends JsonResource
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
     /**
-     * @OA\Property(format="string", title="version", default="v1", description="version name", property="version"),
-     * @OA\Property(format="string", title="status", default="active", description="Can be: current / active / deprecated", property="status"),
-     * @OA\Property(format="string", title="deprecated_date", default="10.10.2022", description="date when API will be deprecated", property="deprecated_date"),
-     * @OA\Property(format="string", title="example_url", default="http(s)://localhost/api/v1/", description="example API url", property="example_url")
+     * @OA\Property(type="string", example="v1", description="Version preffix", property="version"),
+     * @OA\Property(type="string", example="active", description="Status of API version", property="status", enum={"current", "active", "deprecated"}),
+     * @OA\Property(type="string", format="date", example="10.10.2022", description="Date when API will be deprecated", property="deprecated_date"),
+     * @OA\Property(type="string", example="http(s)://localhost/api/v1/", description="Example API url", property="example_url")
      */
     public function toArray($request)
     {
