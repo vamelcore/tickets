@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\AuthLoginRequest;
 use App\Http\Requests\Api\V1\AuthRegisterRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Api\V1\UserResource;
+use App\Http\Resources\Api\ResponseResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +19,7 @@ class AuthController extends Controller
      * operationId="Login",
      * tags={"Auth"},
      * summary="User Login",
-     * description="Login User Here",
+     * description="User login",
      *     @OA\RequestBody(
      *         @OA\JsonContent(),
      *         @OA\MediaType(
@@ -83,11 +84,51 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
+     * path="/logout",
+     * operationId="Logout",
+     * tags={"Auth"},
+     * summary="User Logout",
+     * description="User logout",
+     * security={ {"sanctum": {} }},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout Successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(type="integer", example="100", description="User identifier", property="id"),
+     *                 @OA\Property(type="boolean", example="true", description="Logout status", property="logout"),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorised",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated."),
+     *         )
+     *     )
+     * )
+     */
+    public function logout()
+    {
+        $userId = Auth::id();
+        Auth::user()->tokens()->delete();
+        Auth::guard('web')->logout();
+        return new ResponseResource([
+            'id' => $userId,
+            'logout' => true
+        ]);
+    }
+
+    /**
+     * @OA\Post(
      * path="/register",
      * operationId="Register",
      * tags={"Auth"},
      * summary="User Register",
-     * description="User Register here",
+     * description="User register",
      *     @OA\RequestBody(
      *         @OA\JsonContent(),
      *         @OA\MediaType(
