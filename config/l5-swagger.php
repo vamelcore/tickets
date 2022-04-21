@@ -186,10 +186,9 @@ return [
                     ],
                 ],*/
                 'sanctum' => [ // Unique name of security
-                    'type' => 'apiKey', // Valid values are "basic", "apiKey" or "oauth2".
-                    'description' => 'Enter token in format: Bearer <-TOKEN->',
-                    'name' => 'Authorization', // The name of the header or query parameter to be used.
-                    'in' => 'header', // The location of the API key. Valid values are "query" or "header".
+                    'type' => 'http',
+                    'scheme' => 'bearer',
+                    'description' => 'Enter token from Login method: {data->token}',
                 ],
 
             ],
