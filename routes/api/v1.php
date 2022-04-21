@@ -18,6 +18,7 @@ Route::get('/version', [\App\Http\Controllers\Api\VersionController::class, 'ind
 
 Route::post('/login', [\App\Http\Controllers\Api\V1\AuthController::class, 'login'])->name('login');
 Route::post('/register', [\App\Http\Controllers\Api\V1\AuthController::class, 'register'])->name('register');
+Route::post('/restore', [\App\Http\Controllers\Api\V1\AuthController::class, 'restore'])->name('restore');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\V1\AuthController::class, 'logout'])->name('logout');
