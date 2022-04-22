@@ -22,4 +22,5 @@ Route::post('/restore', [\App\Http\Controllers\Api\V1\AuthController::class, 're
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\V1\AuthController::class, 'logout'])->name('logout');
+    Route::put('/password', [\App\Http\Controllers\Api\V1\AuthController::class, 'password'])->name('password');
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Helpers\PasswordHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\AuthPasswordRequest;
 use App\Http\Requests\Api\V1\AuthRestoreRequest;
 use App\Http\Requests\Api\V1\AuthLoginRequest;
 use App\Http\Requests\Api\V1\AuthRegisterRequest;
@@ -22,23 +23,30 @@ class AuthController extends Controller
      * path="/login",
      * operationId="Login",
      * tags={"Auth"},
-     * summary="User Login",
+     * summary="User login",
      * description="User login",
      *     @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
      *            mediaType="multipart/form-data",
      *            @OA\Schema(
      *               type="object",
      *               required={"email", "password"},
      *               @OA\Property(property="email", type="email"),
-     *               @OA\Property(property="password", type="password")
-     *            )
-     *        )
+     *               @OA\Property(property="password", type="password"),
+     *            ),
+     *        ),
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(property="email", type="text", description="User email"),
+     *                 @OA\Property(property="password", type="password", description="Password"),
+     *                 example={"email":"", "password":""},
+     *             ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Login Successfully",
+     *         description="Login successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="data", type="object", ref="#/components/schemas/UserResource")
      *         )
@@ -77,8 +85,8 @@ class AuthController extends Controller
      */
     public function login(AuthLoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
+        $data = $request->only('email', 'password');
+        if (Auth::attempt($data)) {
             Auth::user()->token = Auth::user()->createToken('authToken')->plainTextToken;
             return new UserResource(Auth::user());
         } else {
@@ -91,20 +99,20 @@ class AuthController extends Controller
      * path="/logout",
      * operationId="Logout",
      * tags={"Auth"},
-     * summary="User Logout",
+     * summary="User logout",
      * description="User logout",
      * security={ {"sanctum": {} }},
      *     @OA\Response(
      *         response=200,
-     *         description="Logout Successfully",
+     *         description="Logout successfully",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(type="integer", example="100", description="User identifier", property="id"),
      *                 @OA\Property(type="boolean", example="true", description="Logout status", property="logout"),
-     *             )
-     *         )
+     *             ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=401,
@@ -120,7 +128,7 @@ class AuthController extends Controller
         Auth::user()->currentAccessToken()->delete();
         return new ResponseResource([
             'id' => Auth::id(),
-            'logout' => true
+            'logout' => true,
         ]);
     }
 
@@ -129,10 +137,9 @@ class AuthController extends Controller
      * path="/register",
      * operationId="Register",
      * tags={"Auth"},
-     * summary="User Register",
+     * summary="User register",
      * description="User register",
      *     @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
@@ -141,13 +148,23 @@ class AuthController extends Controller
      *                 @OA\Property(property="name", type="text"),
      *                 @OA\Property(property="email", type="text"),
      *                 @OA\Property(property="password", type="password"),
-     *                 @OA\Property(property="password_confirmation", type="password")
+     *                 @OA\Property(property="password_confirmation", type="password"),
+     *             ),
+     *         ),
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(property="name", type="text", description="User name"),
+     *                 @OA\Property(property="email", type="text", description="User email"),
+     *                 @OA\Property(property="password", type="password", description="Password"),
+     *                 @OA\Property(property="password_confirmation", type="password", description="Password confirmation"),
+     *                 example={"name": "", "email":"", "password":"", "password_confirmation":""},
      *             ),
      *         ),
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Register Successfully",
+     *         description="Register successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="data", type="object", ref="#/components/schemas/UserResource")
      *         )
@@ -183,7 +200,7 @@ class AuthController extends Controller
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
         $user->token = $user->createToken('authToken')->plainTextToken;
-        return new UserResource($user);
+        return (new UserResource($user))->response()->setStatusCode(201);
     }
 
     /**
@@ -194,25 +211,31 @@ class AuthController extends Controller
      * summary="Restore password",
      * description="Restore password",
      *     @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
      *            mediaType="multipart/form-data",
      *            @OA\Schema(
      *               type="object",
      *               required={"email"},
-     *               @OA\Property(property="email", type="email")
-     *            )
-     *        )
+     *               @OA\Property(property="email", type="email"),
+     *            ),
+     *        ),
+     *        @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(property="email", type="email", description="User email"),
+     *                 example={"email": ""},
+     *             ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Login Successfully",
+     *         description="Restored successfully",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(type="text", example="admin@email.com", description="User email", property="email"),
-     *                 @OA\Property(type="boolean", example="true", description="Restore status", property="restore"),
+     *                 @OA\Property(type="boolean", example="true", description="Email send status", property="send"),
      *             )
      *         )
      *     ),
@@ -237,8 +260,8 @@ class AuthController extends Controller
      */
     public function restore(AuthRestoreRequest $request)
     {
-        $email = $request->only('email');
-        $user = User::where(['email' => $email])->first();
+        $data = $request->only('email');
+        $user = User::where(['email' => $data['email']])->first();
         $password = PasswordHelper::randString();
         $user->password = Hash::make($password);
         $user->save();
@@ -246,8 +269,70 @@ class AuthController extends Controller
         Mail::to($user)->send(new RestoreMail($password));
 
         return new ResponseResource([
-            'email' => $email,
-            'success' => true
+            'email' => $data['email'],
+            'send' => true,
+        ]);
+    }
+
+    /**
+     * @OA\Put(
+     * path="/password",
+     * operationId="Password",
+     * tags={"Auth"},
+     * summary="Update password",
+     * description="Update password",
+     * security={ {"sanctum": {} }},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(property="password", type="password", description="Password"),
+     *                 @OA\Property(property="password_confirmation", type="password", description="Password confirmation"),
+     *                 example={"password": "", "password_confirmation": ""},
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(type="integer", example="100", description="User identifier", property="id"),
+     *                 @OA\Property(type="boolean", example="true", description="Update password status", property="update"),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="password",
+     *                     type="array",
+     *                     @OA\Items(type="string"),
+     *                     example={"The password field is required."}
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function password(AuthPasswordRequest $request)
+    {
+        $data = $request->only('password');
+        $user = User::where(['id' => Auth::id()])->first();
+        $user->password = Hash::make($data['password']);
+        $user->save();
+
+        return new ResponseResource([
+            'id' => Auth::id(),
+            'update' => true,
         ]);
     }
 }
