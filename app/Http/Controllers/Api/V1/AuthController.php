@@ -266,7 +266,7 @@ class AuthController extends Controller
         $user->password = Hash::make($password);
         $user->save();
 
-        Mail::to($user)->send(new RestoreMail($password));
+        Mail::to($user)->send(new RestoreMail($user->name,$password));
 
         return new ResponseResource([
             'email' => $data['email'],

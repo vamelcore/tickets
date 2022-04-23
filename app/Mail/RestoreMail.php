@@ -12,14 +12,15 @@ class RestoreMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public $password;
-
+    public $name;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($password)
+    public function __construct($name, $password)
     {
+        $this->name = $name;
         $this->password = $password;
     }
 
@@ -30,6 +31,7 @@ class RestoreMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->view('vendor.mail.restore')->subject('Restore password');
+        return $this->markdown('emails.auth.restore')
+            ->subject('Restore password');
     }
 }
