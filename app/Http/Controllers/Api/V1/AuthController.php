@@ -8,6 +8,7 @@ use App\Http\Requests\Api\V1\AuthPasswordRequest;
 use App\Http\Requests\Api\V1\AuthRestoreRequest;
 use App\Http\Requests\Api\V1\AuthLoginRequest;
 use App\Http\Requests\Api\V1\AuthRegisterRequest;
+use App\Http\Resources\Api\ErrorResource;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Http\Resources\Api\ResponseResource;
 use App\Mail\RestoreMail;
@@ -55,7 +56,7 @@ class AuthController extends Controller
      *         response=401,
      *         description="Unauthorised",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Unauthorised."),
+     *             @OA\Property(property="message", type="string", example="User not found."),
      *         )
      *     ),
      *     @OA\Response(
@@ -90,7 +91,9 @@ class AuthController extends Controller
             Auth::user()->token = Auth::user()->createToken('authToken')->plainTextToken;
             return new UserResource(Auth::user());
         } else {
-            return abort(401, 'Unauthorised.');
+            return (new ErrorResource([
+                'message' => 'User not found.'
+            ]))->response()->setStatusCode(401);
         }
     }
 
