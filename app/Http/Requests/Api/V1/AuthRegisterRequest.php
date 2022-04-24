@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Rules\FullName;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AuthRegisterRequest extends FormRequest
@@ -24,9 +25,9 @@ class AuthRegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed|min:8',
+            'name' => ['required', new FullName(2)],
+            'email' => ['required','email:rfc,dns','unique:users'],
+            'password' => ['required','confirmed','min:8'],
         ];
     }
 }
