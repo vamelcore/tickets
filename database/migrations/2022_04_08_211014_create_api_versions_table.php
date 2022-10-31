@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('version');
             $table->string('status');
             $table->date('deprecated_date')->nullable();
+            $table->timestamps();
         });
     }
 

@@ -9,6 +9,12 @@ class ApiVersion extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'version',
+        'status',
+        'deprecated_date'
+    ];
+
     protected $dates = [
         'deprecated_date'
     ];
