@@ -87,7 +87,8 @@ class AuthController extends Controller
     public function login(AuthLoginRequest $request)
     {
         $data = $request->only('email', 'password');
-        if (Auth::attempt($data)) {
+        $remember = $request->remember ?? false;
+        if (Auth::attempt($data, $remember)) {
             Auth::user()->token = Auth::user()->createToken('authToken')->plainTextToken;
             return new UserResource(Auth::user());
         } else {
