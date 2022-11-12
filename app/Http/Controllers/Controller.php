@@ -10,7 +10,7 @@ use Illuminate\Routing\Controller as BaseController;
 /**
  * @OA\Info(
  *    title="SandBOX API Documentnation",
- *    version="v1",
+ *    version=L5_SWAGGER_CONST_API_VERSION,
  *    description="Swagger OpenApi Documentnation"
  * )
  * @OA\Server(
