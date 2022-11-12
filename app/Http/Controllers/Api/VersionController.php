@@ -27,8 +27,12 @@ class VersionController extends Controller
      */
     public function index()
     {
-        return VersionResource::collection(Cache::remember('api_version', config('cache.default_cache_time'), function (){
-            return ApiVersion::latest('id')->get();
-        }));
+        return VersionResource::collection(Cache::remember(
+            'api_version',
+            config('cache.default_cache_time'),
+            function (){
+                return ApiVersion::latest('id')->limit(20)->get();
+            }
+        ));
     }
 }
