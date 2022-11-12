@@ -16,6 +16,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -90,12 +93,13 @@ class AuthController extends Controller
         $remember = $request->remember ?? false;
         if (Auth::attempt($data, $remember)) {
             Auth::user()->token = Auth::user()->createToken('authToken')->plainTextToken;
+
             return new UserResource(Auth::user());
-        } else {
-            return (new ErrorResource([
-                'message' => 'User not found.'
-            ]))->response()->setStatusCode(401);
         }
+
+        return (new ErrorResource([
+            'message' => 'User not found.'
+        ]))->response()->setStatusCode(401);
     }
 
     /**
@@ -130,6 +134,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::user()->currentAccessToken()->delete();
+
         return new ResponseResource([
             'id' => Auth::id(),
             'logout' => true,
@@ -203,7 +208,9 @@ class AuthController extends Controller
         $data = $request->only('name', 'email', 'password');
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
+        event(new Registered($user));
         $user->token = $user->createToken('authToken')->plainTextToken;
+
         return (new UserResource($user))->response()->setStatusCode(201);
     }
 
@@ -337,6 +344,31 @@ class AuthController extends Controller
         return new ResponseResource([
             'id' => Auth::id(),
             'update' => true,
+        ]);
+    }
+
+
+
+
+
+
+
+    public function emailVerification(Request $request)
+    {
+        $request->user()->sendEmailVerificationNotification();
+
+        return new ResponseResource([
+            'email' => $request->user()->getEmailForVerification(),
+            'send' => true,
+        ]);
+    }
+
+
+    public function emailVerified(Request $request)
+    {
+        return new ResponseResource([
+            'email' => $request->user()->getEmailForVerification(),
+            'verified' => $request->user()->hasVerifiedEmail(),
         ]);
     }
 }

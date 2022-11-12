@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/email-verify/{id}/{hash}', [\App\Http\Controllers\EmailVerificationController::class, 'index'])
+    ->middleware(['signed'])
+    ->name('verification.verify');
+
 Route::any('{any}', function () {
     return view('index');
 })->where('any', '^(?!api).*$');
