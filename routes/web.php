@@ -13,10 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', [\App\Http\Controllers\IndexController::class, 'index'])->name('home');
 Route::get('/email-verify/{id}/{hash}', [\App\Http\Controllers\EmailVerificationController::class, 'index'])
     ->middleware(['signed'])
     ->name('verification.verify');
 
-Route::any('{any}', function () {
-    return view('index');
-})->where('any', '^(?!api).*$');
+//Route::any('{any}', [\App\Http\Controllers\IndexController::class, 'index']);
