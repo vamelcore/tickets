@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [\App\Http\Controllers\IndexController::class, 'index'])->name('home');
+Route::get('/', [\App\Http\Controllers\IndexController::class, 'index'])
+    ->name('home');
 Route::get('/email-verify/{id}/{hash}', [\App\Http\Controllers\EmailVerificationController::class, 'index'])
     ->middleware(['signed'])
     ->name('verification.verify');

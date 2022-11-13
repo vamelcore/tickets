@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -208,8 +208,9 @@ class AuthController extends Controller
         $data = $request->only('name', 'email', 'password');
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
-        event(new Registered($user));
         $user->token = $user->createToken('authToken')->plainTextToken;
+
+        event(new Registered($user));
 
         return (new UserResource($user))->response()->setStatusCode(201);
     }
@@ -277,6 +278,8 @@ class AuthController extends Controller
         $user->password = Hash::make($password);
         $user->save();
 
+        event(new PasswordReset($user));
+
         Mail::to($user)->send(new RestoreMail($user->name,$password));
 
         return new ResponseResource([
@@ -316,6 +319,20 @@ class AuthController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorised",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated."),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Your email address is not verified."),
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=422,
      *         description="Unprocessable Entity",
      *         @OA\JsonContent(
@@ -347,23 +364,78 @@ class AuthController extends Controller
         ]);
     }
 
-
-
-
-
-
-
+    /**
+     * @OA\Post(
+     * path="/email-verification",
+     * operationId="EmailVerification",
+     * tags={"Auth"},
+     * summary="Send email verification",
+     * description="Send new email verification message",
+     * security={ {"sanctum": {} }},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Email sended successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(type="text", example="admin@email.com", description="User email", property="email"),
+     *                 @OA\Property(type="boolean", example="true", description="Email send status", property="send"),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorised",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated."),
+     *         )
+     *     )
+     * )
+     */
     public function emailVerification(Request $request)
     {
-        $request->user()->sendEmailVerificationNotification();
+        $send = false;
+        if (!$request->user()->hasVerifiedEmail()) {
+            $request->user()->sendEmailVerificationNotification();
+            $send = true;
+        }
 
         return new ResponseResource([
             'email' => $request->user()->getEmailForVerification(),
-            'send' => true,
+            'send' => $send,
         ]);
     }
 
-
+    /**
+     * @OA\Get(
+     * path="/email-verified",
+     * operationId="EmailVerificationStatus",
+     * tags={"Auth"},
+     * summary="Check email verification status",
+     * description="Check email verification status",
+     * security={ {"sanctum": {} }},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Email verified successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(type="text", example="admin@email.com", description="User email", property="email"),
+     *                 @OA\Property(type="boolean", example="true", description="Email verification status", property="verified"),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorised",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated."),
+     *         )
+     *     )
+     * )
+     */
     public function emailVerified(Request $request)
     {
         return new ResponseResource([
