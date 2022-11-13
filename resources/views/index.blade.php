@@ -48,7 +48,7 @@
                                 <tr>
                                     <td>{{ $version->version==config('app.api_version')?'*':'' }}</td>
                                     <td>{{ $version->version }}</td>
-                                    <td>{{ $version->deprecated_date->format(config('app.date_format_short')) }}</td>
+                                    <td>{{ $version->deprecated_date ? $version->deprecated_date->format(config('app.date_format_short')) : ''}}</td>
                                 </tr>
                             @endforeach
                             </tbody>
