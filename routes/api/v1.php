@@ -17,8 +17,8 @@ Route::post('/login', [\App\Http\Controllers\Api\V1\AuthController::class, 'logi
     ->name('login');
 Route::post('/register', [\App\Http\Controllers\Api\V1\AuthController::class, 'register'])
     ->name('register');
-Route::post('/restore', [\App\Http\Controllers\Api\V1\AuthController::class, 'restore'])
-    ->name('restore');
+Route::post('/password-restore', [\App\Http\Controllers\Api\V1\AuthController::class, 'passwordRestore'])
+    ->name('password.restore');
 
 Route::middleware(['auth:sanctum'])->group(function() {
     Route::post('/logout', [\App\Http\Controllers\Api\V1\AuthController::class, 'logout'])
@@ -30,6 +30,6 @@ Route::middleware(['auth:sanctum'])->group(function() {
 });
 
 Route::middleware(['auth:sanctum','verified'])->group(function () {
-    Route::put('/password', [\App\Http\Controllers\Api\V1\AuthController::class, 'password'])
-        ->name('password');
+    Route::put('/password-update', [\App\Http\Controllers\Api\V1\AuthController::class, 'passwordUpdate'])
+        ->name('password.update');
 });

@@ -217,8 +217,8 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     * path="/restore",
-     * operationId="Restore",
+     * path="/password-restore",
+     * operationId="PasswordRestore",
      * tags={"Auth"},
      * summary="Restore password",
      * description="Restore password",
@@ -270,7 +270,7 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function restore(AuthRestoreRequest $request)
+    public function passwordRestore(AuthRestoreRequest $request)
     {
         $data = $request->only('email');
         $user = User::where(['email' => $data['email']])->first();
@@ -290,8 +290,8 @@ class AuthController extends Controller
 
     /**
      * @OA\Put(
-     * path="/password",
-     * operationId="Password",
+     * path="/password-update",
+     * operationId="PasswordUpdate",
      * tags={"Auth"},
      * summary="Update password",
      * description="Update password",
@@ -351,7 +351,7 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function password(AuthPasswordRequest $request)
+    public function passwordUpdate(AuthPasswordRequest $request)
     {
         $data = $request->only('password');
         $user = User::where(['id' => Auth::id()])->first();
