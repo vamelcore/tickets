@@ -44,7 +44,7 @@ class Handler extends ExceptionHandler
             if ($request->is('api/*')) {
                 if ($e instanceof NotFoundHttpException || $e instanceof ModelNotFoundException) {
                     return (new ErrorResource([
-                        'message' => 'Not found'
+                        'message' => __('errors.not_found')
                     ]))->response()->setStatusCode(404);
                 }
             }
