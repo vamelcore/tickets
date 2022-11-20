@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class AuthLoginRequest extends FormRequest
 {
@@ -24,8 +25,14 @@ class AuthLoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required','email:rfc,dns'],
-            'password' => ['required','min:8'],
+            'email' => [
+                'required',
+                'email:rfc,dns'
+            ],
+            'password' => [
+                'required',
+                Password::min(8)
+            ],
         ];
     }
 }

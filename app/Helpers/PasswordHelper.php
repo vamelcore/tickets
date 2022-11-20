@@ -6,7 +6,7 @@ class PasswordHelper
 {
     public static function randString(int $length = 12 )
     {
-        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,./<>?;':[]{}|~!@#$%^&*()_+-=";
         return substr(str_shuffle(str_repeat($chars, $length)), rand(0, strlen($chars) * $length - $length), $length);
     }
 }
