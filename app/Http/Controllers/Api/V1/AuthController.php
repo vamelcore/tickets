@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Contracts\Api\V1\AuthInterface;
 use App\Helpers\PasswordHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\AuthPasswordRequest;
@@ -22,6 +23,13 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    public $service;
+
+    public function __construct(AuthInterface $authService)
+    {
+        $this->service = $authService;
+    }
+
     /**
      * @OA\Post(
      * path="/login",
@@ -89,17 +97,7 @@ class AuthController extends Controller
      */
     public function login(AuthLoginRequest $request)
     {
-        $data = $request->only('email', 'password');
-        $remember = $request->remember ?? false;
-        if (Auth::attempt($data, $remember)) {
-            Auth::user()->token = Auth::user()->createToken('authToken')->plainTextToken;
-
-            return new UserResource(Auth::user());
-        }
-
-        return (new ErrorResource([
-            'message' => 'User not found.'
-        ]))->response()->setStatusCode(401);
+        return $this->service->login($request);
     }
 
     /**
@@ -133,12 +131,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        Auth::user()->currentAccessToken()->delete();
-
-        return new ResponseResource([
-            'id' => Auth::id(),
-            'logout' => true,
-        ]);
+        return $this->service->logout();
     }
 
     /**
@@ -205,14 +198,7 @@ class AuthController extends Controller
      */
     public function register(AuthRegisterRequest $request)
     {
-        $data = $request->only('name', 'email', 'password');
-        $data['password'] = Hash::make($data['password']);
-        $user = User::create($data);
-        $user->token = $user->createToken('authToken')->plainTextToken;
-
-        event(new Registered($user));
-
-        return (new UserResource($user))->response()->setStatusCode(201);
+        return $this->service->register($request);
     }
 
     /**
@@ -272,20 +258,7 @@ class AuthController extends Controller
      */
     public function passwordRestore(AuthRestoreRequest $request)
     {
-        $data = $request->only('email');
-        $user = User::where(['email' => $data['email']])->first();
-        $password = PasswordHelper::randString();
-        $user->password = Hash::make($password);
-        $user->save();
-
-        event(new PasswordReset($user));
-
-        Mail::to($user)->send(new RestoreMail($user->name,$password));
-
-        return new ResponseResource([
-            'email' => $data['email'],
-            'send' => true,
-        ]);
+        return $this->service->passwordRestore($request);
     }
 
     /**
@@ -353,15 +326,7 @@ class AuthController extends Controller
      */
     public function passwordUpdate(AuthPasswordRequest $request)
     {
-        $data = $request->only('password');
-        $user = User::where(['id' => Auth::id()])->first();
-        $user->password = Hash::make($data['password']);
-        $user->save();
-
-        return new ResponseResource([
-            'id' => Auth::id(),
-            'update' => true,
-        ]);
+        return $this->service->passwordUpdate($request);
     }
 
     /**
@@ -395,16 +360,7 @@ class AuthController extends Controller
      */
     public function emailVerification(Request $request)
     {
-        $send = false;
-        if (!$request->user()->hasVerifiedEmail()) {
-            $request->user()->sendEmailVerificationNotification();
-            $send = true;
-        }
-
-        return new ResponseResource([
-            'email' => $request->user()->getEmailForVerification(),
-            'send' => $send,
-        ]);
+        return $this->service->emailVerification($request);
     }
 
     /**
@@ -438,9 +394,6 @@ class AuthController extends Controller
      */
     public function emailVerified(Request $request)
     {
-        return new ResponseResource([
-            'email' => $request->user()->getEmailForVerification(),
-            'verified' => $request->user()->hasVerifiedEmail(),
-        ]);
+        return $this->service->emailVerified($request);
     }
 }
