@@ -3,28 +3,24 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Api\V1\AuthInterface;
-use App\Helpers\PasswordHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\AuthPasswordRequest;
 use App\Http\Requests\Api\V1\AuthRestoreRequest;
 use App\Http\Requests\Api\V1\AuthLoginRequest;
 use App\Http\Requests\Api\V1\AuthRegisterRequest;
-use App\Http\Resources\Api\ErrorResource;
-use App\Http\Resources\Api\V1\UserResource;
-use App\Http\Resources\Api\ResponseResource;
-use App\Mail\RestoreMail;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
+    /**
+     * @var AuthInterface
+     */
     public $service;
 
+    /**
+     * @param AuthInterface $authService
+     */
     public function __construct(AuthInterface $authService)
     {
         $this->service = $authService;
