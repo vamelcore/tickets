@@ -35,19 +35,21 @@ class AuthController extends Controller
      * description="User login",
      *     @OA\RequestBody(
      *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
+     *            mediaType="application/x-www-form-urlencoded",
      *            @OA\Schema(
      *               type="object",
      *               required={"email", "password"},
-     *               @OA\Property(property="email", type="email"),
-     *               @OA\Property(property="password", type="password"),
+     *               @OA\Property(property="email", type="string", format="email", description="User email"),
+     *               @OA\Property(property="password", type="string", format="password", description="Password"),
      *            ),
      *        ),
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 @OA\Property(property="email", type="text", description="User email"),
-     *                 @OA\Property(property="password", type="password", description="Password"),
+     *                 type="object",
+     *                 required={"email", "password"},
+     *                 @OA\Property(property="email", type="string", format="email", description="User email"),
+     *                 @OA\Property(property="password", type="string", format="password", description="Password"),
      *                 example={"email":"", "password":""},
      *             ),
      *         ),
@@ -139,23 +141,24 @@ class AuthController extends Controller
      * description="User register",
      *     @OA\RequestBody(
      *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
+     *             mediaType="application/x-www-form-urlencoded",
      *             @OA\Schema(
      *                 type="object",
      *                 required={"name","email", "password", "password_confirmation"},
-     *                 @OA\Property(property="name", type="text"),
-     *                 @OA\Property(property="email", type="text"),
-     *                 @OA\Property(property="password", type="password"),
-     *                 @OA\Property(property="password_confirmation", type="password"),
+     *                 @OA\Property(property="name", type="string", format="text", description="User name"),
+     *                 @OA\Property(property="email", type="string", format="email", description="User email"),
+     *                 @OA\Property(property="password", type="string", format="password", description="Password"),
+     *                 @OA\Property(property="password_confirmation", type="string", format="password", description="Password confirmation"),
      *             ),
      *         ),
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 @OA\Property(property="name", type="text", description="User name"),
-     *                 @OA\Property(property="email", type="text", description="User email"),
-     *                 @OA\Property(property="password", type="password", description="Password"),
-     *                 @OA\Property(property="password_confirmation", type="password", description="Password confirmation"),
+     *                 type="object",
+     *                 @OA\Property(property="name", type="string", format="text", description="User name"),
+     *                 @OA\Property(property="email", type="string", format="email", description="User email"),
+     *                 @OA\Property(property="password", type="string", format="password", description="Password"),
+     *                 @OA\Property(property="password_confirmation", type="string", format="password", description="Password confirmation"),
      *                 example={"name": "", "email":"", "password":"", "password_confirmation":""},
      *             ),
      *         ),
@@ -206,17 +209,18 @@ class AuthController extends Controller
      * description="Restore password",
      *     @OA\RequestBody(
      *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
+     *            mediaType="application/x-www-form-urlencoded",
      *            @OA\Schema(
      *               type="object",
      *               required={"email"},
-     *               @OA\Property(property="email", type="email"),
+     *               @OA\Property(property="email", type="string", format="email", description="User email"),
      *            ),
      *        ),
      *        @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 @OA\Property(property="email", type="email", description="User email"),
+     *                 type="object",
+     *                 @OA\Property(property="email", type="string", format="email", description="User email"),
      *                 example={"email": ""},
      *             ),
      *         ),
@@ -228,7 +232,7 @@ class AuthController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(type="text", example="admin@email.com", description="User email", property="email"),
+     *                 @OA\Property(type="string", example="admin@email.com", description="User email", property="email"),
      *                 @OA\Property(type="boolean", example="true", description="Email send status", property="send"),
      *             )
      *         )
@@ -266,11 +270,21 @@ class AuthController extends Controller
      * description="Update password",
      * security={ {"sanctum": {} }},
      *     @OA\RequestBody(
+     *          @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"password","password_confirmation"},
+     *                 @OA\Property(property="password", type="string", format="password", description="Password"),
+     *                 @OA\Property(property="password_confirmation", type="string", format="password", description="Password confirmation"),
+     *             ),
+     *         ),
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 @OA\Property(property="password", type="password", description="Password"),
-     *                 @OA\Property(property="password_confirmation", type="password", description="Password confirmation"),
+     *                 type="object",
+     *                 @OA\Property(property="password", type="string", format="password", description="Password"),
+     *                 @OA\Property(property="password_confirmation", type="string", format="password", description="Password confirmation"),
      *                 example={"password": "", "password_confirmation": ""},
      *             ),
      *         ),
@@ -340,7 +354,7 @@ class AuthController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(type="text", example="admin@email.com", description="User email", property="email"),
+     *                 @OA\Property(type="string", example="admin@email.com", description="User email", property="email"),
      *                 @OA\Property(type="boolean", example="true", description="Email send status", property="send"),
      *             )
      *         )
@@ -374,7 +388,7 @@ class AuthController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(type="text", example="admin@email.com", description="User email", property="email"),
+     *                 @OA\Property(type="string", example="admin@email.com", description="User email", property="email"),
      *                 @OA\Property(type="boolean", example="true", description="Email verification status", property="verified"),
      *             )
      *         )
