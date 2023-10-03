@@ -1,7 +1,7 @@
 name: Deploy
 run-name: Deploy on branch ${{ github.ref_name }}
 
-concurrency: production
+concurrency: ${{ vars.ENVIRONMENT }}
 
 on:
   push:
@@ -15,25 +15,25 @@ on:
 jobs:
   deploy:
     runs-on: ${{ vars.RUNNER_NAME }}
-    environment: production
+    environment: ${{ vars.ENVIRONMENT }}
     defaults:
       run:
         shell: bash
-        working-directory: /home/ubuntu/www
+        working-directory: ${{ vars.WORKING_DIRECORY }}
     steps:
       - name: Enter maintenance mode
-        run: docker compose exec -it php php artisan down
+        run: ${{ vars.APPLICATION }} php artisan down
       - name: Pull the latest version of the app
         run: |
           cd backend
-          git pull origin master
+          git pull origin ${{ github.ref_name }}
       - name: Install composer dependencies
-        run: docker compose exec -it php composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+        run: ${{ vars.APPLICATION }} composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
       - name: Clear the old cache
-        run: docker compose exec -it php php artisan clear-compiled
+        run: ${{ vars.APPLICATION }} php artisan clear-compiled
       - name: Recreate cache
-        run: docker compose exec -it php php artisan optimize
+        run: ${{ vars.APPLICATION }} php artisan optimize
       - name: Run database migrations
-        run: docker compose exec -it php php artisan migrate --force
+        run: ${{ vars.APPLICATION }} php artisan migrate --force
       - name: Exit maintenance mode
-        run: docker compose exec -it php php artisan up
+        run: ${{ vars.APPLICATION }} php artisan up
