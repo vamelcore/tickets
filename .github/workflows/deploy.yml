@@ -1,0 +1,25 @@
+name: Deploy
+run-name: Deploy on branch ${{ github.ref }}
+
+concurrency: production
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ${{ vars.RUNNER_NAME }}
+    environment: production
+    defaults:
+      run:
+        shell: bash
+        working-directory: /home/ubuntu/www
+    steps:
+      - name: Deploy to server
+        run: pwd
