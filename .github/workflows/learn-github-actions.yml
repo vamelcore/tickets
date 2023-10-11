@@ -5,6 +5,7 @@ on: workflow_dispatch
 jobs:
   dump_contexts_to_log:
     runs-on: ${{ vars.RUNNER_NAME }} #ubuntu-latest
+    environment: ${{ vars.ENVIRONMENT }}
     steps:
       - name: Test
         run: echo ${{ vars.RUNNER_NAME_2 }}
