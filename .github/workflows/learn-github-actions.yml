@@ -9,7 +9,7 @@ jobs:
       - name: WorkingDirectory
         shell: bash
         working-directory: ${{ github.ref_name }}
-        run: pwd
+        run: echo ${{ vars.RUNNER_NAME }}
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
