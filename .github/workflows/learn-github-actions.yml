@@ -6,6 +6,10 @@ jobs:
   dump_contexts_to_log:
     runs-on: ${{ vars.RUNNER_NAME }} #ubuntu-latest
     steps:
+      - name: WorkingDirectory
+        shell: bash
+        working-directory: ${{ github.ref_name }}
+        run: pwd
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
